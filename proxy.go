@@ -41,9 +41,26 @@ func enableCORS(w http.ResponseWriter) {
 func copyHeader(dst, src http.Header) {
 	for k, v := range src {
 		switch k {
-		case "Connection", "TE", "Transfer-Encoding", "Keep-Alive", "Proxy-Authorization", "Proxy-Authentication", "Trailer", "Upgrade":
+		case
+			"Connection",
+			"Keep-Alive",
+			"Proxy-Authentication",
+			"Proxy-Authorization",
+			"TE",
+			"Trailer",
+			"Transfer-Encoding",
+			"Upgrade":
 			log.Printf("stripped header: %q (%v)", k, v)
+		case
+			"Access-Control-Allow-Origin",
+			"Access-Control-Allow-Methods",
+			"Access-Control-Allow-Headers":
+			log.Printf("replaced header: %q (%v)", k, v)
+			for _, vi := range v {
+				dst.Set(k, vi)
+			}
 		default:
+			log.Printf("copy header: %q (%v)", k, v)
 			for _, vi := range v {
 				dst.Add(k, vi)
 			}
